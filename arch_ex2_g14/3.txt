@@ -1,0 +1,51 @@
+addi sp , sp , -16
+sw ra , 4(sp) # it is a return register
+sw s2 , 8(sp) #it is a used register
+lui s3 , 0x23B8F  #array base address
+ori s3 , s3 , 0x400
+addi s4 , zero , 0  # int i = 0 for loop
+addi t2 , zero , 100 #array initialize
+
+for:
+    bge s4 , a0 , end_loop #???????????????  -> if (i>n) -> end_loop
+    slli t0, s4 , 2 #t0 = i * 4
+    add t0 , t0 , s3
+    addi t3 , a0 , 0 #load n arg
+    addi t4 , s4 , 0 #load i arg   
+    jal ra , pascal
+    sw a0 , 0(t0)    # store result in array 
+    addi s4 , s4 , 1
+	j for   # go to loop again
+   
+end_loop:
+    lw ra , 4(sp)    
+    lw s2 , 8(sp)      # restore saved register and pointer
+    addi sp , sp , 16
+    jalr zero , ra , 0
+   
+
+pascal: #lable pascal -> pascal functions
+    addi sp, sp,-16 #use 2 eight byte element for registre
+    sw ra, 0(sp) # save return address
+    sw s0, 8(sp) #save s0 register
+    addi s0, a0 , 0 #row arg register
+    addi a1 , a1 , 0 # col arg register
+    beqz a1 , equal_zero # if a1 == 0 -> go to equal zero lable
+	bne a1 , s0 , not_equal_row # check if col != row => not_equal_row
+equal_zero:
+    addi a0, a0 , 1 #return 1 if col == 0 or col == row
+    jal zero , end_pascal 
+  
+not_equal_row:
+    addi s0 , s0 , -1 #decrement row and col by 1
+    addi a1 , a1 , -1
+    jal ra , pascal # recursive call to pascal with (row-1 , col-1)  -->> agarirad dasht mishe ra ro bikhial shod va serfan jal kard ??????
+    addi a1,a1, 1 #increment col - 1 -> col
+    jal ra , pascal # recursive call with (row-1 , col)
+    add t0 , t0 , a0 #sum of the two results from previous call
+ end_pascal:
+     lw ra , 0 (sp)
+     lw s0 , 8 (sp)
+     # restore saved register
+     addi sp , sp , 16
+ 	 jalr zero , ra , 0

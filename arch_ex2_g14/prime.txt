@@ -1,0 +1,29 @@
+start: # special cases
+  li t0, 2         # initialize divisor to 2
+  beq a0, zero, end  # check if number is zero
+  beq a0, t0, prime # check if number is 2
+  bleu a0, t0, not_prime # check if number is less than 2
+  j loop 
+
+loop: # iterate from 2 to number
+  beq t0, a0, prime # if divisor equals number then we checked the every number befor so the number is prime
+  addi t1, a0, 0 # using t1 as a temp variable
+  j divising # check if number divisible by current divisor 
+
+divising:
+  sub t1, t1, t0 
+  beq t1, zero, not_prime # it was divisible so it's not prime
+  bgt t1, zero, divising # consecutive subtractions
+  addi t0, t0, 1 # it wasn't divisible so we should test the next divisor
+  j loop
+
+prime:
+  li a0, 1        # set return value to 1
+  j end
+
+not_prime:
+  li a0, 0        # set return value to 0
+  j end
+
+end:
+  nop
