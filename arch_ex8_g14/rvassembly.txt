@@ -1,0 +1,36 @@
+addi s0, zero, 8 # s0 = SIZE = 8
+addi t0, zero, 0 # t0 = i = 0
+addi t1, zero, 0 # t1 = j = 0
+addi t2, zero, 0 # t2 = sum = 0
+add s1, zero, gp # s1 = head of array
+for_i:
+	beq t0, s0, continue
+    addi t0, t0, 1 # i++
+    add t1, zero, zero # j = 0
+    for_j:
+    	beq t1, s0, for_i
+        add t3, t0, t1 # t3 = i+j
+        addi t4, t3, 1 # t4 = i+j+1
+        sw t4, 0(s1) # array[i][j] = i+j+1   
+        addi s1, s1, 4 # به صورت خطی ذخیره میشه تو مموری در نهایت 
+        addi t1, t1, 1 # j++
+    	j for_j
+    j for_i
+continue:
+	add s1, zero, gp # reset the pointer to head of array
+    addi t0, zero, 0 # reset i and j
+	addi t1, zero, 0 
+	for_i_2:
+	beq t0, s0, end
+    addi t0, t0, 1 # i++
+    add t1, zero, zero # j = 0
+    for_j_2:
+    	beq t1, s0, for_i_2
+        lw t5, 0(s1) # t5 =  array[i][j]
+        addi s1, s1, 4 # مثل حلقه قبل
+        add t2, t2, t5 # sum = sum + t5
+        addi t1, t1, 1 # j++
+    	j for_j_2
+    j for_i_2
+end:
+	addi zero, zero, 0
