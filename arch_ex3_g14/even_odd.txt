@@ -1,0 +1,81 @@
+# initializing the arr array
+li a0, 10 # a0 = arr_size = 10
+li a1, 0x3E80 # a1 is the address of first element of arr.
+li a2, 0x3EA4 # a2 is the address of last element of arr.
+li a3, 0x3E80 # a3 is the pointer that iterates over the array.
+li s0, 0 # s0 = false
+li s1, 1 # s1 = true
+li a7, 0 # first element value
+array_init_loop:
+	bgt a3, a2, main # if initializing the array finished go to main
+    sw a7, 0(a3) # arr[i] = a7
+    addi a7, a7, 1 # a7++
+    addi a3, a3, 4 # array pointer to the next index
+    j array_init_loop
+    
+ 
+is_even:
+	beq a5, s0, true  # if n == 0 
+    beq a5, s1, false # if n == 1
+    addi a5, a5, -1 # is_odd(n-1)
+    j is_odd
+
+
+is_odd:
+	beq a5, s1, true  # if n == 1
+    beq a5, s0, false # if n == 0
+    addi a5, a5, -1   # is_even(n-1)
+    j is_even
+	
+
+true:
+	li a6, 1
+    j continue
+
+false:
+	li a6, 0
+    j continue
+
+# t6 = arr[i] * arr[i-1]
+my_mul:
+	blt t4, t5, end_mul
+    add t6, a5, t6 # continous additions
+    addi t5, t5, 1 # j++
+    j my_mul
+
+if:
+	lw a5, 0(a3)	# loading arr[i]
+    addi t0, a3, -8 # pointer i-2
+    lw t1, 0(t0)    # t1 = arr[i-2]
+    add t2, t1, a5  # t2 =  arr[i] + arr[i-2]
+    sw t2, 0(a3)	# arr[i] = t2
+    addi a3, a3, 4  # pointer to next index
+    addi a4, a4, 1 # i++
+    j main_for
+
+else:
+	lw a5, 0(a3)    # loading arr[i]
+    addi t3, a3, -4 # ponter i-1
+    lw t4, 0(t3) # t4 = arr[i-1]
+    li t5, 1 # j = 1
+    li t6, 0 # t6 is the result of mult
+    j my_mul
+    end_mul:
+    sw t6, 0(a3) # arr[i] = arr[i] * arr[i-1]
+    addi a3, a3, 4
+    addi a4, a4, 1 # next iteration
+    j main_for
+
+main:
+	addi a3, a1, 0 # reset a3 to first elm
+	li a4, 2 # a4 = i
+    addi a3, a3, 8 # i=2
+    main_for:
+        bgt a4, a0, end
+        lw a5, 0(a3) # a5 = n = arr[i]
+        j is_even
+        continue:
+        	beq a6, s1, if   # is_even(n) == 1
+   			beq a6, s0, else # is_odd(n) == 1  
+end:
+	addi x0, x0, 0
